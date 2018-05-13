@@ -1,0 +1,3 @@
+cd C:\Users\Kamil\Desktop\Social data analysis and visualization\project-folder
+
+python -m http.server 8888
