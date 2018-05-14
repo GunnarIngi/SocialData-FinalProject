@@ -32,6 +32,7 @@
 
 		svg {
 		margin: 1.2em;
+
 	}
 
 	blockquote, q {
@@ -2865,7 +2866,7 @@
 					}
 
 						#header nav ul li a:hover {
-							color: #000000;
+							color: #fff;;
 						}
 
 					#header nav ul li:first-child {
@@ -2912,7 +2913,7 @@
 			}
 
 				#header.alt h1 a {
-					color: #000000;
+					color: #fff;;
 				}
 
 			#header.alt nav {
@@ -3288,12 +3289,12 @@
 		}
 
 		.brushed {
-				fill: #fdff00;
+				fill: #FF7F0E;
 				stroke: #8e1b54;
 				opacity: 1.0;
 		}
 		.non_brushed {
-				fill: black;
+				fill: #1f77b4 ;
 				opacity: 1.0;
 				stroke: gray;
 				stroke-width: 0.25;
@@ -3321,4 +3322,53 @@
 
 #f_yts a{
 	color: #000000;
+	background-color: #FF7F0E: 
 }
+
+ul {
+    list-style: none;
+    margin: 0 0 2em 0;
+    padding-left: 1em;
+}
+
+div.major.special.analysis {
+    width: 80%;
+    margin: auto;
+}
+
+#five{
+	float: left;
+
+}
+	#five h3{
+		margin: 0;
+		margin-top: 1em;
+	}
+
+#fives{
+	float: left;
+
+}
+	#fives h3{
+		margin: 0;
+		margin-top: 1em;
+	}
+
+li #f_yts .button .special .big {
+	background-color: #FF7F0E;
+}
+
+		.taxiDot {
+				fill: #FF7F0E;
+		}
+		.uberDot {
+				fill: #1f77b4;
+		}
+		.tooltip {
+		            position: absolute;
+		            font-size: 12px;
+		            width:  auto;
+		            height: auto;
+		            pointer-events: none;
+		            background-color: white;
+		}
