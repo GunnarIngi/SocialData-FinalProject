@@ -9,6 +9,9 @@ function range(start, end) {
 
 
 //Width and height
+var daysOfTheWeek = ["Wednesday", "Thursday", "Friday", "Saturday", "Sunday","Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday", "Sunday","Monday",
+"Tuesday","Wednesday", "Thursday", "Friday", "Saturday", "Sunday","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday","Monday", "Tuesday",
+"Wednesday", "Thursday", "Friday", "Saturday"];
 var w = 540;
 var h = 360;
 var tempData;
@@ -34,7 +37,7 @@ myDiv.appendChild(selectList);
 for (var i = 0; i < dates.length; i++) {
     var option = document.createElement("option");
     option.value = dates[i];
-    option.text = 'May '+dates[i];        //todo thrusday, Wednesday and so on
+    option.text = 'May '+dates[i]+ ' ' +daysOfTheWeek[dates[i]] ;
     selectList.appendChild(option);
 }
 document.getElementById("myNewSelect").style.display = 'none';
@@ -59,7 +62,7 @@ var svgUber = d3.select("#five")
 // create taxi svg
 var svgTaxi = d3.select("#fives")
 .append("svg")
-.attr("width", w)
+.attr("width", w+20)
 .attr("height", h);
 
 
@@ -85,7 +88,7 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
 // uber scales and axes
     var xUberScale = d3.scaleBand()
     .domain(dates)
-    .rangeRound([padding, w])
+    .rangeRound([padding+5, w])
     .paddingInner(0.4);
 
     var yUberScale = d3.scaleLinear()
@@ -104,7 +107,7 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
 // taxi scales and axes
   var xTaxiScale = d3.scaleBand()
   .domain(dates)
-  .rangeRound([padding, w])
+  .rangeRound([padding+20, w])
   .paddingInner(0.4);
 
   var yTaxiScale = d3.scaleLinear()
@@ -165,12 +168,12 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
 
    svgUber.append("g")
           .attr("class", "y axis")
-          .attr("transform", "translate(" + padding + ",0)")
+          .attr("transform", "translate(" + padding*1.1 + ",0)")
           .call(yUberAxis);
 
    svgUber.append("text")
              .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-             .attr("transform", "translate("+ (padding/4) +","+(h/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+             .attr("transform", "translate("+ (padding/5) +","+(h/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
              .text("Number of Uber pickups");
 
    svgUber.append("text")
@@ -186,12 +189,12 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
 
   svgTaxi.append("g")
           .attr("class", "y axis")
-          .attr("transform", "translate(" + padding + ",0)")
+          .attr("transform", "translate(" + padding*1.3  + ",0)")
           .call(yTaxiAxis);
 
   svgTaxi.append("text")
             .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-            .attr("transform", "translate("+ (padding/16) +","+(h/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+            .attr("transform", "translate("+ (padding/4) +","+(h/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
             .text("Number of Yellow Taxi pickups");
 
   svgTaxi.append("text")
@@ -215,7 +218,7 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
 
       xUberScale = d3.scaleBand()
       .domain(dates)
-      .rangeRound([padding, w])
+      .rangeRound([padding+5, w])
       .paddingInner(0.4);
 
       yUberScale = d3.scaleLinear()
@@ -235,7 +238,7 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
 
       xTaxiScale = d3.scaleBand()
       .domain(dates)
-      .rangeRound([padding, w])
+      .rangeRound([padding+20, w])
       .paddingInner(0.4);
 
       yTaxiScale = d3.scaleLinear()
@@ -363,7 +366,7 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
       //Taxi update
       xTaxiScale = d3.scaleBand()
         .domain(hours)
-        .rangeRound([padding, w])
+        .rangeRound([padding+20, w])
         .paddingInner(0.4);
 
       yTaxiScale = d3.scaleLinear()
