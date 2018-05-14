@@ -7,15 +7,17 @@
     var pickups;
     var selectedPickupsByTime;
     var selectedPickupsByTimeNew;
+    var mappedPickupsByMinute;
 
 
     //Timeline chart variables
     var svgTimeline;
     var path;
     var timelineMargin = {top: 0, right: 20, bottom: 40, left: 60}; //Mike Bostock’s margin convention
-    var defaultTimelineWidth = 1200 - timelineMargin.right - timelineMargin.left;
+    var defaultTimelineWidth = 800 - timelineMargin.right - timelineMargin.left;
     var defaultTimelineHeight = 220 - timelineMargin.top - timelineMargin.bottom;
-    var sumCurve;
+    var uberMinuteCountCurve;
+    var taxiMinuteCountCurve;
 
     //Map chart variables
     var svgMap;
@@ -47,13 +49,13 @@
              	  .projection(projection);
 
     //Create SVG element for timeline
-    svgTimeline = d3.select("#three")
+    svgTimeline = d3.select("#seven")
                       .append("svg")
                       .attr("width", defaultTimelineWidth + timelineMargin.right + timelineMargin.left)
                       .attr("height", defaultTimelineHeight + timelineMargin.top + timelineMargin.bottom);
 
     //Create SVG element for boroughs
-    svgMap = d3.select("#three")
+    svgMap = d3.select("#eight")
                       .append("svg")
                       .attr("id", "map")
                       .attr("width", defaultMapWidth)
@@ -80,7 +82,7 @@
       					})
       					.attr("r", 3)
                 .attr("class", function(d) {
-                          if(d.Uber==1){console.log("non"); return "non_brushed";}else{console.log("bru");return "brushed";}
+                          if(d.Uber==1){ return "non_brushed";}else{return "brushed";}
       					});
     }
     /*
@@ -124,7 +126,7 @@
     }
 
       //Load in GeoJSON data
-      d3.json("../../boroughs.geojson", function(boroughsDatasetError,geojson) {
+      d3.json("boroughs.geojson", function(boroughsDatasetError,geojson) {
 
             if (boroughsDatasetError) {                              //If error is not null, something went wrong.
                 console.log(boroughsDatasetError);                   //Log the error.
@@ -153,11 +155,14 @@
 
             uberRowConverter = function(d) {
               return {
-                index: parseInt(d.INDEX),
-                Latitude: parseFloat(d.Lat),
-                Longitude: parseFloat(d.Lon),
-                Hour: parseInt(d.hour),
-                Minute: parseInt(d.minute)
+                //index: parseInt(d.INDEX),
+                //Latitude: parseFloat(d.Lat),
+              //  Longitude: parseFloat(d.Lon),
+              //  Hour: parseInt(d.hour),
+              //  Minute: parseInt(d.minute)
+                Datetime: parseUberDate(d.datetime),
+                UberPickupsPerMinute: parseInt(d.UberPickupsPerMinute),
+                TaxiPickupsPerMinute: parseInt(d.TaxiPickupsPerMinute)
               };
             }
 
@@ -172,8 +177,8 @@
 
 
                 // Load in murder data
-                d3.csv("data/uber_13_05_2014-seperated_hour_and_minute.csv", uberRowConverter, function(uberDatasetError, data) {
-
+                d3.csv("data/taxi_&_uber_pickup_counts_13_05_2014_by_minute.csv", uberRowConverter, function(uberDatasetError, data) {
+                        // data/uber_13_05_2014-seperated_hour_and_minute
                     if (uberDatasetError) {                              //If error is not null, something went wrong.
                         console.log(uberDatasetError);                   //Log the error.
                     } else {                                               //If no error, the file loaded correctly. Yay!
@@ -191,65 +196,55 @@
 
                   //Pre-procession stage:
 
-                  //Grouping data
-                  pickupsByTime = d3.nest().key(function(d){ return (d.Hour*60)+d.Minute;}).entries(uber_and_taxi_pickups_13_05_2014);
 
-                  //Sorting for proper displaying purpose
-                  mapOfPickupsByTime = pickupsByTime.map(function (d) {
-                    return {
-                      key: d.key,
-                      numberOfpickupsPerMinute: d.values.length,
-                      pickups: d.values
-                    };
-                  })
-                  .sort(function (a, b) {
-                    if (parseInt(a.key)< parseInt(b.key))
+                  uber_and_taxi_pickups_13_05_2014.sort(function (a, b) {
+                    if (Date.parse(a.Datetime)< Date.parse(b.Datetime))
                       return -1;
-                      if (parseInt(a.key)>parseInt(b.key))
+                      if (Date.parse(a.Datetime)> Date.parse(b.Datetime))
                         return 1;
                     return 0
                   });
 
+                  mappedPickupsByMinute  = uber_and_taxi_pickups_13_05_2014.columns.slice(1).map(function(id) {
+                    return {
+                      id: id,
+                      values: uber_and_taxi_pickups_13_05_2014.map(function(d) {
+                        return {datetime: d.Datetime, pickupCounts: d[id]};
+                      })
+                    };
+                  });
+
+
                   // For building line purposes
-                  sumCurve = [];
+                  uberMinuteCountCurve = [];
+                  taxiMinuteCountCurve = [];
 
-                  function getIndexOfElement(minute, list) {
-                      var i;
-                      for (i = 0; i < list.length; i++) {
-                          if (parseInt(list[i].key) === minute) {
-                              return i;
-                          }
-                      }
-                      return -1;
-                  }
+                  uber_and_taxi_pickups_13_05_2014.forEach(function(d) {
+                      uberMinuteCountCurve.push([d.Datetime, d.UberPickupsPerMinute]);
+                      taxiMinuteCountCurve.push([d.Datetime, d.TaxiPickupsPerMinute]);
+                  });
 
-                 //Supplementation of data - addition minutes without any pickup with value 0
-                  var minutesInDay = 1440
-                  var indexOfElement;
-                  for (var currentMinute = 0; currentMinute < minutesInDay; currentMinute++) {
-                        indexOfElement=getIndexOfElement(currentMinute, mapOfPickupsByTime);
-                      if(indexOfElement != -1){
-                          sumCurve.push([mapOfPickupsByTime[indexOfElement].key, mapOfPickupsByTime[indexOfElement].numberOfpickupsPerMinute]);
-                      }else{
-                          sumCurve.push([currentMinute, 0]);
-                      }
-                  }
-
-                  // Creation of the timeline stage:
-                  //d3.scaleTime()
-                    //  .domain([new Date(2000, 0, 1), new Date(2000, 0, 2)])
                   //Create scales
                   xTimelineScale = d3.scaleTime()
-                           .domain([new Date(2014, 4, 13), new Date(2014, 4, 14)])
+                           .domain(d3.extent(taxiMinuteCountCurve, function(d) { return d[0]; }))
                            .range([timelineMargin.left, defaultTimelineWidth]);
 
-                  yTimelineScale = d3.scaleLinear()
+                  yTimelineScaleOld = d3.scaleLinear()
                              .domain([
-                                      d3.min(sumCurve, function(d) { return d[1];}),
-                                      d3.max(sumCurve, function(d) { return d[1];})
+                                      d3.min(uberMinuteCountCurve, function(d) { return d[1];}),
+                                      d3.max(taxiMinuteCountCurve, function(d) { return d[1];})
                                        ])
-                             .range([defaultTimelineHeight, 5]);
+                              .range([defaultTimelineHeight, 5]);
 
+                  yTimelineScale = d3.scaleLinear()
+                    .domain([
+                        d3.min(mappedPickupsByMinute, function(d) { return d3.min(d.values, function(d) { return d.pickupCounts; }); }),
+                        d3.max(mappedPickupsByMinute, function(d) { return d3.max(d.values, function(d) { return d.pickupCounts; }); })
+                    ])
+                    .range([defaultTimelineHeight, 5]);
+
+                  zTimelineScale = d3.scaleOrdinal(d3.schemeCategory10);
+                  zTimelineScale.domain(mappedPickupsByMinute.map(function(c) { return c.id; }));
                   //Define axes
                   xTimelineAxis = d3.axisBottom()
                         .scale(xTimelineScale)
@@ -262,19 +257,49 @@
                       //  alert( date ); // 1.01.2011, 02:03:04.567
                   //Define line generator
                   line = d3.line()
-                             .x(function(d) { return xTimelineScale(new Date(2014, 4, 13, parseInt(d[0]/60), d[0]%60)); })
+                             .x(function(d) { return xTimelineScale(d[0]); })
                              .y(function(d) { return yTimelineScale(d[1]); });
 
+                  multiLine = d3.line()
+                            .curve(d3.curveBasis)
+                            .x(function(d) { return xTimelineScale(d.datetime); })
+                            .y(function(d) { return yTimelineScale(d.pickupCounts); });
+
+                svgTimeline.selectAll(".city")
+                  .data(mappedPickupsByMinute)
+                  .enter().append("g")
+                  .attr("class", "city");
+
+
+//
+                svgTimeline.selectAll(".city").append("g").append("path")
+                      //  .datum(mappedPickupsByMinute)
+                        .attr("class", "line")
+                       .attr("d", function(d) {
+                        return multiLine(d.values); })
+                        .style("stroke", function(d) { return zTimelineScale(d.id); });
+
+
+    /*
+                            city.append("text")
+                                .datum(function(d) { return {id: d.id, value: d.values[d.values.length - 1]}; })
+                                .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.temperature) + ")"; })
+                                .attr("x", 3)
+                                .attr("dy", "0.35em")
+                                .style("font", "10px sans-serif")
+                                .text(function(d) { return d.id; });
+*/
+
                   //Create line
-                  svgTimeline.append("path")
-                         .datum(sumCurve)
+                /*  svgTimeline.append("path")
+                         .datum(uberMinuteCountCurve)
                          .attr("fill", "none")
                          .attr("stroke","steelblue")
                          .attr("stroke-linejoin","round")
                          .attr("stroke-linecap", "round")
                          .attr("stroke-width",1)
                          //.attr("class", "line")
-                         .attr("d", line);
+                         .attr("d", line);*/
 
                   //Create axes
                   svgTimeline.append("g")
@@ -302,13 +327,7 @@
                              .attr("x", defaultTimelineWidth / 2 + 140)
                              .attr("y", defaultTimelineHeight +37)
                              .text("Exemplary weekday divided by time");
-/*
-                // Filter if there are some unpropriate coordinates in the data
-                // did not add it in the pre-processing stage because date of the murder may be correct
-                murdersSince2006To2016 =  murdersSince2006To2016.filter(function (d) {
-                      return !isNaN(d.Longitude) && !isNaN(d.Latitude);
-                });
-*/
+
 
                 drawCirclesOnTheBoroughMap(uber_and_taxi_pickups_sample_13_05_2014);
 
@@ -353,21 +372,12 @@
                         var startMinuteOfTheDay = startDate.getHours()*60+startDate.getMinutes();
                         var endMinuteOfTheDay = endDate.getHours()*60+endDate.getMinutes();
 
-                        //Get pickups between required dates
-                        selectedPickupsByTime = mapOfPickupsByTime.filter(function(d) {
-
-                                return d.key>startMinuteOfTheDay && d.key<=endMinuteOfTheDay;
-                        });
 
                         selectedPickupsByTimeNew = uber_and_taxi_pickups_sample_13_05_2014.filter(function(d) {
 
                                 return d.Datetime>startDate && d.Datetime<=endDate;
                         });
 
-                        // Group murders by date
-                        pickups =selectedPickupsByTime.reduce(function(newCollection, elem) {
-                          return newCollection.concat(elem.pickups);
-                        }, []);
 
                         // draw the murders on the map
                         //drawCirclesOnTheBoroughMap(pickups);
