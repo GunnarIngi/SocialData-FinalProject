@@ -57,7 +57,7 @@ var svgUber = d3.select("#five")
 .attr("height", h);
 
 // create taxi svg
-var svgTaxi = d3.select("#five")
+var svgTaxi = d3.select("#fives")
 .append("svg")
 .attr("width", w)
 .attr("height", h);
@@ -137,7 +137,7 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
   .attr("height", function(d) {
     return h -yUberScale(d) - padding ;
   })
-  .attr("fill", "red");
+  .attr("fill", "#1f77b4 ");
 
   //Create taxi  bars
   svgTaxi.selectAll("rect")
@@ -155,7 +155,7 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
   .attr("height", function(d) {
     return h -yTaxiScale(d) - padding ;
   })
-  .attr("fill", "##FFFF00");
+  .attr("fill", "#FF7F0E");
 
   //Append axises to svgUber
    svgUber.append("g")
@@ -171,12 +171,12 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
    svgUber.append("text")
              .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
              .attr("transform", "translate("+ (padding/4) +","+(h/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
-             .text("Value");
+             .text("Number of Uber pickups");
 
    svgUber.append("text")
              .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
              .attr("transform", "translate("+ (w/2) +","+(h-(padding/3))+")")  // centre below axis
-             .text("Dates");
+             .text("Time interval");
 
  //Append axises to svgTaxi
   svgTaxi.append("g")
@@ -191,13 +191,13 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
 
   svgTaxi.append("text")
             .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-            .attr("transform", "translate("+ (padding/4) +","+(h/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
-            .text("Value");
+            .attr("transform", "translate("+ (padding/16) +","+(h/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+            .text("Number of Yellow Taxi pickups");
 
   svgTaxi.append("text")
             .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
             .attr("transform", "translate("+ (w/2) +","+(h-(padding/3))+")")  // centre below axis
-            .text("Dates");
+            .text("Time interval");
 
   //On click, update with new data  -------------------------
   d3.selectAll("li")
@@ -268,7 +268,7 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
       .attr("height", function(d) {
         return h -yUberScale(d) - padding ;
       })
-      .attr("fill", "red");
+      .attr("fill", "#1f77b4 ");
       //Create X axis
       svgUber.selectAll("g.x.axis")
       .call(xUberAxis);
@@ -294,7 +294,7 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
       .attr("height", function(d) {
         return h -yTaxiScale(d) - padding ;
       })
-      .attr("fill", "red");
+      .attr("fill", "r#FF7F0E");
      //Create X axis
       svgTaxi.selectAll("g.x.axis")
       .call(xTaxiAxis);
@@ -349,7 +349,7 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
         .attr("height", function(d) {
           return h -yUberScale(d.UberPickupCounts) - padding ;
         })
-        .attr("fill", "blue");
+        .attr("fill", "#1f77b4 ");
        //Create X axis
       svgUber.selectAll("g.x.axis")
         .call(xUberAxis);
@@ -396,7 +396,7 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
         .attr("height", function(d) {
           return h -yTaxiScale(d.TaxiPickupCounts) - padding ;
         })
-        .attr("fill", " #fdff00");
+        .attr("fill", "#FF7F0E");
        //Create X axis
       svgTaxi.selectAll("g.x.axis")
         .call(xTaxiAxis);
@@ -446,7 +446,7 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
       .attr("height", function(d) {
         return h -yUberScale(d.UberPickupCounts) - padding ;
       })
-      .attr("fill", "blue");
+      .attr("fill", "#1f77b4");
      //Create X axis
     svgUber.selectAll("g.x.axis")
       .call(xUberAxis);
@@ -485,7 +485,7 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
         .attr("height", function(d) {
           return h -yTaxiScale(d.TaxiPickupCounts) - padding ;
         })
-        .attr("fill", "#fdff00");
+        .attr("fill", "#FF7F0E");
        //Create X axis
       svgTaxi.selectAll("g.x.axis")
         .call(xTaxiAxis);

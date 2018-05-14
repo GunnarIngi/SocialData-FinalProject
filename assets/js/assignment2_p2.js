@@ -14,7 +14,7 @@
     var svgTimeline;
     var path;
     var timelineMargin = {top: 0, right: 20, bottom: 40, left: 60}; //Mike Bostock’s margin convention
-    var defaultTimelineWidth = 800 - timelineMargin.right - timelineMargin.left;
+    var defaultTimelineWidth = 1200 - timelineMargin.right - timelineMargin.left;
     var defaultTimelineHeight = 220 - timelineMargin.top - timelineMargin.bottom;
     var uberMinuteCountCurve;
     var taxiMinuteCountCurve;
