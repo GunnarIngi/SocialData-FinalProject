@@ -7,14 +7,13 @@ function range(start, end) {
     return ans;
 }
 
-//d3.select("#five").append("p").text("Demo");
 
 //Width and height
 var daysOfTheWeek = ["Wednesday", "Thursday", "Friday", "Saturday", "Sunday","Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday", "Sunday","Monday",
 "Tuesday","Wednesday", "Thursday", "Friday", "Saturday", "Sunday","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday","Monday", "Tuesday",
 "Wednesday", "Thursday", "Friday", "Saturday"];
-var w = 800;
-var h = 550;
+var w = 540;
+var h = 360;
 var tempData;
 var p = 30;
 var m = 30;
@@ -22,14 +21,12 @@ var padding = 50;
 var margin = 100;
 var hours = range(0,23);
 var dates = range(1,31);
-var dateData = [];
-var dateDataLen = [];
+var taxiPickupCountPerDay = [];
+var uberPickupCountPerDay = [];
 var dataset;
 var hourData = [];
 
 var myDiv = document.getElementById("select");
-
-//Create array of options to be added
 
 //Create and append select list
 var selectList = document.createElement("select");
@@ -38,10 +35,10 @@ myDiv.appendChild(selectList);
 
 //Create and append the options
 for (var i = 0; i < dates.length; i++) {
-    var option1 = document.createElement("option1");
-    option1.value = dates[i];
+    var option = document.createElement("option");
+    option.value = dates[i];
     option.text = 'May '+dates[i]+ ' ' +daysOfTheWeek[dates[i]] ;
-    selectList.appendChild(option1);
+    selectList.appendChild(option);
 }
 document.getElementById("myNewSelect").style.display = 'none';
 
@@ -50,146 +47,264 @@ parseUberDate=d3.timeParse("%m/%d/%Y %H:%M");
 pickupsRowConverter = function(d) {
   return {
     Datetime: parseUberDate(d.datetime),
-    PickupsCount: parseInt(d.pickups_count)
+    TaxiPickupCounts: parseInt(d.taxi_pickups_count),
+    UberPickupCounts: parseInt(d.uber_pickups_count)
   };
 }
 
-d3.csv("data/taxi_may_pickups_count.csv",pickupsRowConverter, function(data) {
+// create uber svg
 
-  dataset = data;
-  mapOfPickupsByDay =
-  dates.map(date=>{
-    tempData = dataset.filter(function(d){
-     dateDataLen.push(d.PickupsCount)
-     return d.Datetime.day == date
-    })
-    dateData.push(tempData);
+var svgUber = d3.select("#five")
+.append("svg")
+.attr("width", w)
+.attr("height", h);
 
-  })
+// create taxi svg
+var svgTaxi = d3.select("#fives")
+.append("svg")
+.attr("width", w+20)
+.attr("height", h);
 
- //  months = tempData.map(d => d.month);
 
-  var xScale = d3.scaleBand()
+d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, function(data) {
+
+    // load may data for taxi and uber
+    dataset = data;
+    taxiPickupCountPerDay = [];
+    uberPickupCountPerDay = [];
+    dates.forEach(function(day) {
+        taxiSum = 0;
+        uberSum = 0;
+        AllHoursOfTheDay = dataset.filter(function(d){
+                  return d.Datetime.getDate() == day;
+        });
+        AllHoursOfTheDay.forEach(function(d){
+                taxiSum = taxiSum + d.TaxiPickupCounts;
+                uberSum = uberSum + d.UberPickupCounts;
+        });
+        taxiPickupCountPerDay.push(taxiSum);
+        uberPickupCountPerDay.push(uberSum);
+    });
+// uber scales and axes
+    var xUberScale = d3.scaleBand()
+    .domain(dates)
+    .rangeRound([padding+5, w])
+    .paddingInner(0.4);
+
+    var yUberScale = d3.scaleLinear()
+    .domain([0, Math.max(...uberPickupCountPerDay)])
+    .range([h-padding, padding]);
+
+    //Define X axis
+    var xUberAxis = d3.axisBottom()
+    .scale(xUberScale);
+
+    //Define Y axis
+    var yUberAxis = d3.axisLeft()
+    .scale(yUberScale)
+    .ticks(10);
+
+// taxi scales and axes
+  var xTaxiScale = d3.scaleBand()
   .domain(dates)
-  .rangeRound([padding, w])
+  .rangeRound([padding+20, w])
   .paddingInner(0.4);
 
-  var yScale = d3.scaleLinear()
-  .domain([0, Math.max(...dateDataLen)])
+  var yTaxiScale = d3.scaleLinear()
+  .domain([0, Math.max(...taxiPickupCountPerDay)])
   .range([h-padding, padding]);
 
   //Define X axis
-  var xAxis = d3.axisBottom()
-  .scale(xScale);
-
+  var xTaxiAxis = d3.axisBottom()
+  .scale(xTaxiScale);
 
   //Define Y axis
-  var yAxis = d3.axisLeft()
-  .scale(yScale)
+  var yTaxiAxis = d3.axisLeft()
+  .scale(yTaxiScale)
   .ticks(10);
 
-  //
-  //Create SVG element
-  var svg = d3.select("#five")
-  .append("svg")
-  .attr("width", w)
-  .attr("height", h);
-  //
-  //Create bars
-  svg.selectAll("rect")
-  .data(dateDataLen)
+  //Create uber  bars
+
+  svgUber.selectAll("rect")
+  .data(uberPickupCountPerDay)
   .enter()
   .append("rect")
   .attr("x", function(d, i) {
-    return xScale(i+1);
+    return xUberScale(i+1);
   })
   .attr("y", function(d) {
-    return yScale(d);
+    return yUberScale(d);
 
   })
-  .attr("width", xScale.bandwidth())
+  .attr("width", xUberScale.bandwidth())
   .attr("height", function(d) {
-    return h -yScale(d) - padding ;
+    return h -yUberScale(d) - padding ;
   })
-  .attr("fill", "red");
- //Create X axis
-  svg.append("g")
-  .attr("class", "x axis")
-  .attr("transform", "translate(0," + (h - padding) + ")")
-  .call(xAxis);
+  .attr("fill", "#1f77b4 ");
 
-  //Create Y axis
-  svg.append("g")
-  .attr("class", "y axis")
-  .attr("transform", "translate(" + padding + ",0)")
-  .call(yAxis);
+  //Create taxi  bars
+  svgTaxi.selectAll("rect")
+  .data(taxiPickupCountPerDay)
+  .enter()
+  .append("rect")
+  .attr("x", function(d, i) {
+    return xTaxiScale(i+1);
+  })
+  .attr("y", function(d) {
+    return yTaxiScale(d);
 
-  svg.append("text")
+  })
+  .attr("width", xTaxiScale.bandwidth())
+  .attr("height", function(d) {
+    return h -yTaxiScale(d) - padding ;
+  })
+  .attr("fill", "#FF7F0E");
+
+  //Append axises to svgUber
+   svgUber.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + (h - padding) + ")")
+          .call(xUberAxis);
+
+   svgUber.append("g")
+          .attr("class", "y axis")
+          .attr("transform", "translate(" + padding*1.1 + ",0)")
+          .call(yUberAxis);
+
+   svgUber.append("text")
+             .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+             .attr("transform", "translate("+ (padding/5) +","+(h/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+             .text("Number of Uber pickups");
+
+   svgUber.append("text")
+             .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+             .attr("transform", "translate("+ (w/2) +","+(h-(padding/3))+")")  // centre below axis
+             .text("Time interval");
+
+ //Append axises to svgTaxi
+  svgTaxi.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + (h - padding) + ")")
+          .call(xTaxiAxis);
+
+  svgTaxi.append("g")
+          .attr("class", "y axis")
+          .attr("transform", "translate(" + padding*1.3  + ",0)")
+          .call(yTaxiAxis);
+
+  svgTaxi.append("text")
             .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
             .attr("transform", "translate("+ (padding/4) +","+(h/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
-            .text("Value");
+            .text("Number of Yellow Taxi pickups");
 
-  svg.append("text")
+  svgTaxi.append("text")
             .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
             .attr("transform", "translate("+ (w/2) +","+(h-(padding/3))+")")  // centre below axis
-            .text("Dates");
+            .text("Time interval");
 
   //On click, update with new data  -------------------------
   d3.selectAll("li")
   .on("click", function() {
 
     document.getElementById("myNewSelect").style.display = 'none';
-
     //See which p was clicked
     var paragraphID = d3.select(this).attr("id");
 
     //Decide what to do next
     if (paragraphID == "f_yth") {
 
-      xScale = d3.scaleBand()
+
+      //Uber
+
+      xUberScale = d3.scaleBand()
       .domain(dates)
-      .rangeRound([padding, w])
+      .rangeRound([padding+5, w])
       .paddingInner(0.4);
 
-      yScale = d3.scaleLinear()
-      .domain([0, Math.max(...dateDataLen)])
+      yUberScale = d3.scaleLinear()
+      .domain([0, Math.max(...uberPickupCountPerDay)])
       .range([h-padding, padding]);
 
-      //Define X axis
-      xAxis = d3.axisBottom()
-      .scale(xScale);
-
+      //Define TaxiX axis
+      xUberAxis = d3.axisBottom()
+      .scale(xUberScale);
 
       //Define Y axis
-      yAxis = d3.axisLeft()
-      .scale(yScale)
+      yUberAxis = d3.axisLeft()
+      .scale(yUberScale)
       .ticks(10);
 
-      //Create bars
-      svg.selectAll("rect").remove()
+      //Taxi
 
-      svg.selectAll("rect")
-      .data(dateDataLen)
+      xTaxiScale = d3.scaleBand()
+      .domain(dates)
+      .rangeRound([padding+20, w])
+      .paddingInner(0.4);
+
+      yTaxiScale = d3.scaleLinear()
+      .domain([0, Math.max(...taxiPickupCountPerDay)])
+      .range([h-padding, padding]);
+
+      //Define TaxiX axis
+      xTaxiAxis = d3.axisBottom()
+      .scale(xTaxiScale);
+
+      //Define Y axis
+      yTaxiAxis = d3.axisLeft()
+      .scale(yTaxiScale)
+      .ticks(10);
+
+      //Create bars Uber
+      svgUber.selectAll("rect").remove()
+
+      svgUber.selectAll("rect")
+      .data(uberPickupCountPerDay)
       .enter()
       .append("rect")
       .attr("x", function(d, i) {
-        return xScale(i+1);
+        return xUberScale(i+1);
       })
       .attr("y", function(d) {
-        return yScale(d);
+        return yUberScale(d);
       })
-      .attr("width", xScale.bandwidth())
+      .attr("width", xUberScale.bandwidth())
       .attr("height", function(d) {
-        return h -yScale(d) - padding ;
+        return h -yUberScale(d) - padding ;
       })
-      .attr("fill", "red");
-     //Create X axis
-      svg.selectAll("g.x.axis")
-      .call(xAxis);
+      .attr("fill", "#1f77b4 ");
+      //Create X axis
+      svgUber.selectAll("g.x.axis")
+      .call(xUberAxis);
 
       //Create Y axis
-      svg.selectAll("g.y.axis")
-      .call(yAxis);
+      svgUber.selectAll("g.y.axis")
+      .call(yUberAxis);
+
+      //Create bars Taxi
+      svgTaxi.selectAll("rect").remove()
+
+      svgTaxi.selectAll("rect")
+      .data(taxiPickupCountPerDay)
+      .enter()
+      .append("rect")
+      .attr("x", function(d, i) {
+        return xTaxiScale(i+1);
+      })
+      .attr("y", function(d) {
+        return yTaxiScale(d);
+      })
+      .attr("width", xTaxiScale.bandwidth())
+      .attr("height", function(d) {
+        return h -yTaxiScale(d) - padding ;
+      })
+      .attr("fill", "#FF7F0E");
+     //Create X axis
+      svgTaxi.selectAll("g.x.axis")
+      .call(xTaxiAxis);
+
+      //Create Y axis
+      svgTaxi.selectAll("g.y.axis")
+      .call(yTaxiAxis);
 
     }
 
@@ -197,108 +312,190 @@ d3.csv("data/taxi_may_pickups_count.csv",pickupsRowConverter, function(data) {
 
       document.getElementById("myNewSelect").style.display = 'block';
 
-      hourData = [];
-      hours.map(hour=>{
-        tempData = dateData[0].filter(function(d){
-         return d['datetime'].split(' ')[1].split(':')[0] == hour
-        })
-        hourData.push(tempData.length);
-      })
-     //  months = tempData.map(d => d.month);
+      currentDayByHours =  dataset.filter(function(d){
+       return d.Datetime.getDate() == 1;
+      });
 
-      xScale = d3.scaleBand()
+      //Uber update
+      xUberScale = d3.scaleBand()
         .domain(hours)
         .rangeRound([padding, w])
         .paddingInner(0.4);
 
-      yScale = d3.scaleLinear()
-        .domain([0, Math.max(...hourData)])
+      yUberScale = d3.scaleLinear()
+        .domain([0, d3.max(currentDayByHours, function(d) { return d.UberPickupCounts;})])
         .range([h-padding, padding]);
 
         //Define X axis
-      xAxis = d3.axisBottom()
-        .scale(xScale);
+      xUberAxis = d3.axisBottom()
+        .scale(xUberScale);
 
 
         //Define Y axis
-      yAxis = d3.axisLeft()
-        .scale(yScale)
+      yUberAxis = d3.axisLeft()
+        .scale(yUberScale)
         .ticks(10);
 
         //Create bars
-      svg.selectAll("rect").remove()
-      svg.selectAll("rect")
-        .data(hourData)
+      svgUber.selectAll("rect").remove()
+      svgUber.selectAll("rect")
+        .data(currentDayByHours)
         .enter()
         .append('rect')
         .attr("x", function(d, i) {
-          return xScale(i);
+          return xUberScale(i);
         })
         .attr("y", function(d) {
-          return yScale(d);
+          return yUberScale(d.UberPickupCounts);
         })
-        .attr("width", xScale.bandwidth())
+        .attr("width", xUberScale.bandwidth())
         .attr("height", function(d) {
-          return h -yScale(d) - padding ;
+          return h -yUberScale(d.UberPickupCounts) - padding ;
         })
-        .attr("fill", "blue");
+        .attr("fill", "#1f77b4 ");
        //Create X axis
-      svg.selectAll("g.x.axis")
-        .call(xAxis);
+      svgUber.selectAll("g.x.axis")
+        .call(xUberAxis);
 
         //Create Y axis
-      svg.selectAll("g.y.axis")
-         .call(yAxis);
-      }
+      svgUber.selectAll("g.y.axis")
+         .call(yUberAxis);
 
-  });
-  d3.select("#myNewSelect")
-  .on("change", function() {
-     var id = d3.select("#myNewSelect").node().value;
-     hourData = [];
-      hours.map(hour=>{
-        tempData = dateData[id].filter(function(d){
-         return d['datetime'].split(' ')[1].split(':')[0] == hour
-        })
-        hourData.push(tempData.length);
-      })
-     //  months = tempData.map(d => d.month);
+      // Uber end
 
-      yScale = d3.scaleLinear()
-        .domain([0, Math.max(...hourData)])
+      //Taxi update
+      xTaxiScale = d3.scaleBand()
+        .domain(hours)
+        .rangeRound([padding+20, w])
+        .paddingInner(0.4);
+
+      yTaxiScale = d3.scaleLinear()
+        .domain([0, d3.max(currentDayByHours, function(d) { return d.TaxiPickupCounts;})])
         .range([h-padding, padding]);
 
+        //Define X axis
+      xTaxiAxis = d3.axisBottom()
+        .scale(xTaxiScale);
+
+
         //Define Y axis
-      yAxis = d3.axisLeft()
-        .scale(yScale)
+      yTaxiAxis = d3.axisLeft()
+        .scale(yTaxiScale)
         .ticks(10);
 
         //Create bars
-      svg.selectAll("rect")
-        .data(hourData)
+      svgTaxi.selectAll("rect").remove()
+      svgTaxi.selectAll("rect")
+        .data(currentDayByHours)
+        .enter()
+        .append('rect')
+        .attr("x", function(d, i) {
+          return xTaxiScale(i);
+        })
+        .attr("y", function(d) {
+          return yTaxiScale(d.TaxiPickupCounts);
+        })
+        .attr("width", xTaxiScale.bandwidth())
+        .attr("height", function(d) {
+          return h -yTaxiScale(d.TaxiPickupCounts) - padding ;
+        })
+        .attr("fill", "#FF7F0E");
+       //Create X axis
+      svgTaxi.selectAll("g.x.axis")
+        .call(xTaxiAxis);
+
+        //Create Y axis
+      svgTaxi.selectAll("g.y.axis")
+         .call(yTaxiAxis);
+          // Taxi end
+      }
+
+  });
+
+  d3.select("#myNewSelect")
+  .on("change", function() {
+     var id = d3.select("#myNewSelect").node().value;
+
+    currentDayByHours =  dataset.filter(function(d){
+     return d.Datetime.getDate() == id;
+    });
+
+    //Uber part
+
+    yUberScale = d3.scaleLinear()
+      .domain([0, d3.max(currentDayByHours, function(d) { return d.UberPickupCounts;})])
+      .range([h-padding, padding]);
+
+      //Define Y axis
+    yUberAxis = d3.axisLeft()
+      .scale(yUberScale)
+      .ticks(10);
+
+      //Create bars
+    svgUber.selectAll("rect")
+      .data(currentDayByHours)
+      .transition()
+      .delay(function(d, i) {
+        return i / currentDayByHours.length * 1000;
+      })
+      .duration(500)
+      .attr("x", function(d, i) {
+        return xUberScale(i);
+      })
+      .attr("y", function(d) {
+        return yUberScale(d.UberPickupCounts);
+      })
+      .attr("width", xUberScale.bandwidth())
+      .attr("height", function(d) {
+        return h -yUberScale(d.UberPickupCounts) - padding ;
+      })
+      .attr("fill", "#1f77b4");
+     //Create X axis
+    svgUber.selectAll("g.x.axis")
+      .call(xUberAxis);
+
+      //Create Y axis
+    svgUber.selectAll("g.y.axis")
+       .call(yUberAxis);
+
+
+      //Taxi part
+
+      yTaxiScale = d3.scaleLinear()
+        .domain([0, d3.max(currentDayByHours, function(d) { return d.TaxiPickupCounts;})])
+        .range([h-padding, padding]);
+
+        //Define Y axis
+      yTaxiAxis = d3.axisLeft()
+        .scale(yTaxiScale)
+        .ticks(10);
+
+        //Create bars
+      svgTaxi.selectAll("rect")
+        .data(currentDayByHours)
         .transition()
         .delay(function(d, i) {
-          return i / dataset.length * 1000;
+          return i / currentDayByHours.length * 1000;
         })
         .duration(500)
         .attr("x", function(d, i) {
-          return xScale(i);
+          return xTaxiScale(i);
         })
         .attr("y", function(d) {
-          return yScale(d);
+          return yTaxiScale(d.TaxiPickupCounts);
         })
-        .attr("width", xScale.bandwidth())
+        .attr("width", xTaxiScale.bandwidth())
         .attr("height", function(d) {
-          return h -yScale(d) - padding ;
+          return h -yTaxiScale(d.TaxiPickupCounts) - padding ;
         })
-        .attr("fill", "blue");
+        .attr("fill", "#FF7F0E");
        //Create X axis
-      svg.selectAll("g.x.axis")
-        .call(xAxis);
+      svgTaxi.selectAll("g.x.axis")
+        .call(xTaxiAxis);
 
         //Create Y axis
-      svg.selectAll("g.y.axis")
-         .call(yAxis);
+      svgTaxi.selectAll("g.y.axis")
+         .call(yTaxiAxis);
 
 
   });
