@@ -1960,7 +1960,12 @@
 			background-color: #f32853;
 			color: #ffffff !important;
 		}
-
+		.button.special.big.yts{
+			background-color: #FF7F0E;
+		}
+		.button.special.big.yth{
+			background-color: #1f77b4;
+		}
 			input[type="submit"].special:hover,
 			input[type="reset"].special:hover,
 			input[type="button"].special:hover,
@@ -1975,6 +1980,9 @@
 			button.special:active,
 			.button.special:active {
 				background-color: #f21040;
+			}
+			button.special.big.yts{
+				background-color: #FF7F0E;
 			}
 
 		@media screen and (max-width: 480px) {
@@ -3372,3 +3380,4 @@ li #f_yts .button .special .big {
 		            pointer-events: none;
 		            background-color: white;
 		}
+
