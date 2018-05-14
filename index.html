@@ -14,6 +14,7 @@
 		<script type="text/javascript" src="d3/d3.js"></script>
 	</head>
 	<body class="landing">
+		
 
 		<!-- Header -->
 			<header id="header" class="alt">
@@ -31,7 +32,7 @@
 			<section id="banner">
 				<h2>Final Project</h2>
 				<p>02806 Social Data Analysis And Visualization <br> Uber and Yellow taxi analysis</p>
-				<p>Gunnar Ingi Magnússon - s173109 <br> Kamil Kaciperski - s180011 <br> Riad Ghorra - s176057</p>
+				<p>Gunnar Ingi Magnússon - s173109 <br> Kamil Kacperski - s180011 <br> Riad Ghorra - s176057</p>
 			</section>
 
 			<!-- Two -->
@@ -50,9 +51,30 @@
 				<section id="three" class="wrapper style2 special">
 					<div class="container">
 						<header class="major special">
-							<h2>Uber pickups in NYC</h2>
-							<p>Data analysis from Uber data from May 2014. Number of pickups per day and per hour.</p>
+							<h2>Uber and Yellow Taxy pickups in NYC</h2>
+							<!--<p>Data analysis from Uber data from May 2014. Number of pickups per day and per hour.</p>-->
 						</header>
+						<div class="major special analysis">
+
+							<h3>Cab rides in New York City : Uber v/s Yellow Taxis </h3>
+							<p>Uber is a peer-to-peer ridesharing company founded in 2009 whose services and mobile app were launched in 2010 in San Francisco, California. It lets users order a cab at any time of date and requires them to pay in advance as opposed to traditional taxis. Uber is now present in more than 630 cities worldwide and has extended its services to food delivery.
+
+							In May 2011, Uber was launched in New York City thus becoming a competitor to traditional yellow taxis. Our goal is to explore and analyze the expansion of Uber in this city and provide answers to questions like:
+
+							</p>							
+							<ul>
+								<li>How much of a threat has Uber become to yellow taxis? Will it replace them one day?</li>
+								<li>Where and when do people use Uber / yellow taxis most often? Why?</li>
+								<li>More generally, can we use this cab data to understand people’s behaviour and routine?</li>
+							</ul>
+						</div>
+
+						<div class="major special analysis">
+
+							<h3>General stats about Uber and taxi use</h3>
+							<p>Here are 2 bar charts showing the number of yellow taxi and Uber rides during different time intervals : the month of May 2014 as a whole and every day of the month. This enables you to compare the number of rides of Ubers versus yellow taxi and draw some conclusions on rush hours and preferred means of transportation. </p>							
+						</div>
+
 						<ul class="actions">
 								<li class="button special big" id="f_yth"><a> Pickups per day </a></li>
 								<li class="button special big" id="f_yts"><a> Pickups per hour </a></li>
@@ -63,8 +85,13 @@
 							<div class="feature">
 								<div class="container" >
 										<div id="five">	
-										</div>	
+											<h3>Number of Uber pickups per time interval</h3>
+										</div>
+										<div id="fives">	
+											<h3>Number of Yellow Taxi pickups per time interval</h3>
+										</div>		
 								</div>
+						
 							</div>
 						</div>
 
@@ -76,7 +103,7 @@
 										<h4>Busiest weekday</h4>
 										<p>Thurdays and Fridays</p>
 									</header>
-									<p>In May 2014 the average number of Uber pickups was around 21.000 pickups per day. The busiest days in May was Thursdays and Fridays sometimes with twice as many pickups than on Mondays.</p>
+									<p>In May 2014 the average number of Uber pickups was around 21.000 pickups per day. The busiest days in May was Thursdays and Fridays sometimes with twice as many pickups than on Mondays. Yellow Taxi pickups was around 476.000 a day. </p>
 								</div>
 							</div>
 							
@@ -85,40 +112,47 @@
 								<div class="content">
 									<header>
 										<h4>Busiest hour</h4>
-										<p>Ratione maiores a, commodi</p>
+										<p>Hours</p>
 									</header>
-									<p>Animi mollitia optio culpa expedita. Dolorem alias minima culpa repellat. Dolores, fuga maiores ut obcaecati blanditiis, at aperiam doloremque.</p>
+									<p>In May 2014 the busiest hours for Uber where around usually around 17 - 19 during the day. But there was more difference in the pickups for yellow taxi. But the peak for Uber was usually between shifts for Yellow Taxi drivers. There was also usually the same lowest pickup rate for both Yellow Taxi and Uber which was during the night. </p>
 								</div>
 							</div>
 						</div>
 						
 
-						<div class="feature-grid">
-							<div class="feature">
-								<div class="image rounded"><img src="images/NY_Uber_4.jpg" alt="" /></div>
-								<div class="content">
-									<header>
-										<h4>Laudantium fugit</h4>
-										<p>Possimus ex reprehenderit eaque</p>
-									</header>
-									<p>Maiores iusto inventore fugit architecto est iste expedita commodi sed, quasi feugiat nam neque mollitia vitae omnis, ea natus facere.</p>
-								</div>
-							</div>
-							<div class="feature">
-								<div class="image rounded"><img src="images/NY_Uber_5.jpg" alt="" /></div>
-								<div class="content">
-									<header>
-										<h4>Porro aliquam</h4>
-										<p>Quaerat, excepturi eveniet laboriosam</p>
-									</header>
-									<p>Vitae earum unde, autem labore voluptas ex, iste dolorum inventore natus consequatur iure similique obcaecati aut corporis hic in! Porro sed.</p>
-								</div>
-							</div>
+
+					</div>
+
+				</section>
+				<section id="main" class="wrapper style1 special">
+				<div class="container" id="nine" >
+
+					<header class="major special">
+						<h2>Evolution of cab rides from 2015 to 2017</h2>
+						<p> In the following timeline is a tooltip for each point</p>
+					</header>
+					<p>Here is a timeline comparing the number of yellow cab journeys and the number of Uber journeys from 2015 to late 2017. You can see that the line is decreasing for yellow taxis and increasing for Uber. You can also tell the approximate date when Uber surpassed yellow taxis in terms of number of rides. This can also be compared to the 2014 data on the previous bar charts where there were a lot more yellow taxi rides than Ubers.</p>
+				</div>
+				<div class="major special analysis">
+											<div id="nine"></div>	
 						</div>
-					</div>
-					<div class="feature" id="seven">
-					</div>
-					<div class="feature" id="eight">
+				</section>
+				
+			
+			<section id="three" class="wrapper style2 special">
+					<div class="container">
+						<header class="major special">
+							<h2>Geographic overview of pickups in NYC</h2>
+							<p>Drag through the brushable timline</p>
+						</header>
+
+							<p>Now we dive into a more precise exploration of our dataset. You can find here a map showing the different pickup points of both Uber (in blue) and yellow taxis (in orange) on the arbitrary day of May 13th 2014. There is a brushable timeline as well on which you can see the total number of pickups for the entire time period and use it to filter the points of the map corresponding to the time period selected on the timeline. You can see that yellow cabs are mostly clustered around Manhattan whereas Ubers are more widespread.</p>
+
+						
+						<div class="feature" id="seven">
+						</div>
+						<div class="feature" id="eight">
+						</div>
 					</div>
 				</section>
 
@@ -151,7 +185,7 @@
 					</ul>
 				</div>
 			</footer>
-
+			<div id="vis-container"></div>
 
 		<!-- Scripts -->
 			<script src="assets/js/jquery.min.js"></script>
@@ -162,6 +196,7 @@
 			<script type="text/javascript" src="assets/js/javascript_copy.js"></script>
 			<!--<script type="text/javascript" src="assets/js/javascriptUber.js"></script>-->
 			<script type="text/javascript" src="assets/js/assignment2_p2.js"></script>
+			<script src="assets/js/timeline_comparison.js"></script>
 
 
 	</body>
