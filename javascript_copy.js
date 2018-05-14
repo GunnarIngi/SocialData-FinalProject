@@ -10,7 +10,7 @@ function range(start, end) {
 //d3.select("#five").append("p").text("Demo");
 
 //Width and height
-var w = 700;
+var w = 800;
 var h = 550;
 var tempData;
 var p = 30;
@@ -24,21 +24,21 @@ var dateDataLen = [];
 var dataset;
 var hourData = [];
 
-var myDiv = document.getElementById("select1");
+var myDiv = document.getElementById("select");
 
 //Create array of options to be added
 
 //Create and append select list
-var selectList = document.createElement("select1");
+var selectList = document.createElement("select");
 selectList.id = "myNewSelect";
 myDiv.appendChild(selectList);
 
 //Create and append the options
 for (var i = 0; i < dates.length; i++) {
-    var option = document.createElement("option");
-    option.value = dates[i];
-    option.text = 'May '+dates[i];
-    selectList.appendChild(option);
+    var option1 = document.createElement("option1");
+    option1.value = dates[i];
+    option1.text = 'May '+dates[i];
+    selectList.appendChild(option1);
 }
 document.getElementById("myNewSelect").style.display = 'none';
 
