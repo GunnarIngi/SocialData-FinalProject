@@ -10,6 +10,9 @@ function range(start, end) {
 //d3.select("#five").append("p").text("Demo");
 
 //Width and height
+var daysOfTheWeek = ["Wednesday", "Thursday", "Friday", "Saturday", "Sunday","Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday", "Sunday","Monday",
+"Tuesday","Wednesday", "Thursday", "Friday", "Saturday", "Sunday","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday","Monday", "Tuesday",
+"Wednesday", "Thursday", "Friday", "Saturday"];
 var w = 800;
 var h = 550;
 var tempData;
@@ -37,7 +40,7 @@ myDiv.appendChild(selectList);
 for (var i = 0; i < dates.length; i++) {
     var option1 = document.createElement("option1");
     option1.value = dates[i];
-    option1.text = 'May '+dates[i];
+    option.text = 'May '+dates[i]+ ' ' +daysOfTheWeek[dates[i]] ;
     selectList.appendChild(option1);
 }
 document.getElementById("myNewSelect").style.display = 'none';
