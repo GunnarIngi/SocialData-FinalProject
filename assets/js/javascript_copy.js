@@ -294,7 +294,7 @@ d3.csv("data/taxi&uber_may_pickup_counts_by_hour.csv",pickupsRowConverter, funct
       .attr("height", function(d) {
         return h -yTaxiScale(d) - padding ;
       })
-      .attr("fill", "r#FF7F0E");
+      .attr("fill", "#FF7F0E");
      //Create X axis
       svgTaxi.selectAll("g.x.axis")
       .call(xTaxiAxis);
